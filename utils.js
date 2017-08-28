@@ -1,12 +1,12 @@
-exports.isFunction = (object) => {
+const isFunction = (object) => {
   return !!(object && object.constructor && object.call && object.apply)
 }
 
-exports.isPromise = (object) => {
+const isPromise = (object) => {
   return !!(object && object.then && isFunction(object.then))
 }
 
-exports.wrapPromise = (object) => {
+const wrapPromise = (object) => {
   if (isPromise(object)) {
     return object
   } else {
@@ -14,6 +14,11 @@ exports.wrapPromise = (object) => {
   }
 }
 
-exports.isString = (obj) => {
+const isString = (obj) => {
   return (Object.prototype.toString.call(obj) === '[object String]')
 }
+
+exports.isFunction = isFunction
+exports.isPromise = isPromise
+exports.wrapPromise = wrapPromise
+exports.isString = isString
