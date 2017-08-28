@@ -1,0 +1,19 @@
+{
+  "name": "permission-manager",
+  "version": "1.0.0",
+  "description": "Permission Manager for Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mystand/permission-manager.git"
+  },
+  "author": "MyStand <info@mystand.ru>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mystand/permission-manager/issues"
+  },
+  "homepage": "https://github.com/mystand/permission-manager#readme"
+}
