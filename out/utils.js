@@ -1,14 +1,14 @@
 'use strict';
 
-var isFunction = function isFunction(object) {
+const isFunction = object => {
   return !!(object && object.constructor && object.call && object.apply);
 };
 
-var isPromise = function isPromise(object) {
+const isPromise = object => {
   return !!(object && object.then && isFunction(object.then));
 };
 
-var wrapPromise = function wrapPromise(object) {
+const wrapPromise = object => {
   if (isPromise(object)) {
     return object;
   } else {
@@ -16,7 +16,7 @@ var wrapPromise = function wrapPromise(object) {
   }
 };
 
-var isString = function isString(obj) {
+const isString = obj => {
   return Object.prototype.toString.call(obj) === '[object String]';
 };
 
