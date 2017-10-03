@@ -1,4 +1,5 @@
 const { isFunction, wrapPromise } = require('./utils')
+const ForbiddenError = require('./error')
 
 class BasePermissionManager {
   constructor(user, restrictLiteral) {
@@ -26,6 +27,22 @@ class BasePermissionManager {
     }
 
     return wrapPromise(false)
+  }
+
+  assert(action, target) {
+    const model = this.getModel(target)
+
+    if (this.abilities.has(model)) {
+      const abilityRules = this.abilities.get(model)
+
+      const rule = abilityRules.get(abilityRules.has(action) ? action : 'manage')
+
+      if (rule && rule.checkMethod(target)) {
+        return
+      }
+    }
+
+    return Promise.reject(new ForbiddenError())
   }
 
   allow(model, action, query, checkMethod) {
