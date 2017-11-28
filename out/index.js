@@ -73,7 +73,7 @@ var BasePermissionManager = function () {
     key: 'assert',
     value: function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(action, target) {
-        var model, abilityRules, rule;
+        var model, abilityRules, rule, result;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -81,37 +81,35 @@ var BasePermissionManager = function () {
                 model = this.getModel(target);
 
                 if (!this.abilities.has(model)) {
-                  _context2.next = 11;
+                  _context2.next = 10;
                   break;
                 }
 
                 abilityRules = this.abilities.get(model);
                 rule = abilityRules.get(abilityRules.has(action) ? action : 'manage');
-                _context2.t0 = rule;
 
-                if (!_context2.t0) {
-                  _context2.next = 9;
+                if (!rule) {
+                  _context2.next = 10;
                   break;
                 }
 
-                _context2.next = 8;
+                _context2.next = 7;
                 return rule.checkMethod(target);
 
-              case 8:
-                _context2.t0 = _context2.sent;
+              case 7:
+                result = _context2.sent;
 
-              case 9:
-                if (!_context2.t0) {
-                  _context2.next = 11;
+                if (!result) {
+                  _context2.next = 10;
                   break;
                 }
 
                 return _context2.abrupt('return');
 
-              case 11:
-                return _context2.abrupt('return', new ForbiddenError());
+              case 10:
+                throw new ForbiddenError();
 
-              case 12:
+              case 11:
               case 'end':
                 return _context2.stop();
             }

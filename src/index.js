@@ -35,12 +35,15 @@ class BasePermissionManager {
 
       const rule = abilityRules.get(abilityRules.has(action) ? action : 'manage')
 
-      if (rule && await rule.checkMethod(target)) {
-        return
+      if (rule) {
+        const result = await rule.checkMethod(target)
+        if (result) {
+          return          
+        }
       }
     }
 
-    return new ForbiddenError()
+    throw new ForbiddenError()
   }
 
   allow(model, action, query, checkMethod) {
