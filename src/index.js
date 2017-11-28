@@ -1,4 +1,4 @@
-const { isFunction, wrapPromise } = require('./utils')
+const { isFunction } = require('./utils')
 const ForbiddenError = require('./error')
 
 class BasePermissionManager {
@@ -11,7 +11,7 @@ class BasePermissionManager {
   // Override in parent class
   getModel() {}
 
-  can(action, target) {
+  async can(action, target) {
     const model = this.getModel(target)
 
     if (this.abilities.has(model)) {
@@ -20,16 +20,14 @@ class BasePermissionManager {
       const rule = abilityRules.get(abilityRules.has(action) ? action : 'manage')
 
       if (rule) {
-        const result = rule.checkMethod(target)
-
-        return wrapPromise(result)
+        return rule.checkMethod(target)
       }
     }
 
-    return wrapPromise(false)
+    return false
   }
 
-  assert(action, target) {
+  async assert(action, target) {
     const model = this.getModel(target)
 
     if (this.abilities.has(model)) {
@@ -37,12 +35,12 @@ class BasePermissionManager {
 
       const rule = abilityRules.get(abilityRules.has(action) ? action : 'manage')
 
-      if (rule && rule.checkMethod(target)) {
+      if (rule && await rule.checkMethod(target)) {
         return
       }
     }
 
-    return Promise.reject(new ForbiddenError())
+    return new ForbiddenError()
   }
 
   allow(model, action, query, checkMethod) {
@@ -60,7 +58,7 @@ class BasePermissionManager {
     }
   }
 
-  accessible(model, action) {
+  async accessible(model, action) {
     if (this.abilities.has(model)) {
       const abilityRules = this.abilities.get(model)
 
@@ -71,13 +69,13 @@ class BasePermissionManager {
       const rule = abilityRules.get(action)
 
       if (isFunction(rule.query)) {
-        return wrapPromise(rule.query())
+        return rule.query()
       }
 
-      return wrapPromise(rule.query)
+      return rule.query
     }
 
-    return wrapPromise(this.restrictLiteral)
+    return this.restrictLiteral
   }
 }
 
