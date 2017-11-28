@@ -8,6 +8,8 @@ var _require = require('./utils'),
     isFunction = _require.isFunction,
     wrapPromise = _require.wrapPromise;
 
+var ForbiddenError = require('./error');
+
 var BasePermissionManager = function () {
   function BasePermissionManager(user, restrictLiteral) {
     _classCallCheck(this, BasePermissionManager);
@@ -41,6 +43,23 @@ var BasePermissionManager = function () {
       }
 
       return wrapPromise(false);
+    }
+  }, {
+    key: 'assert',
+    value: function assert(action, target) {
+      var model = this.getModel(target);
+
+      if (this.abilities.has(model)) {
+        var abilityRules = this.abilities.get(model);
+
+        var rule = abilityRules.get(abilityRules.has(action) ? action : 'manage');
+
+        if (rule && rule.checkMethod(target)) {
+          return;
+        }
+      }
+
+      return Promise.reject(new ForbiddenError());
     }
   }, {
     key: 'allow',
