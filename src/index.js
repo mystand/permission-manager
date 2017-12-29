@@ -70,12 +70,14 @@ class BasePermissionManager {
       }
 
       const rule = abilityRules.get(action)
-
-      if (isFunction(rule.query)) {
-        return rule.query()
+      
+      if (!rule) {
+        if (isFunction(rule.query)) {
+          return rule.query()
+        }
+  
+        return rule.query
       }
-
-      return rule.query
     }
 
     return this.restrictLiteral
