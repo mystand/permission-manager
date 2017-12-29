@@ -71,7 +71,7 @@ class BasePermissionManager {
 
       const rule = abilityRules.get(action)
       
-      if (!rule) {
+      if (rule) {
         if (isFunction(rule.query)) {
           return rule.query()
         }

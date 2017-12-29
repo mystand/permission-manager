@@ -178,7 +178,7 @@ var BasePermissionManager = function () {
 
                 rule = abilityRules.get(action);
 
-                if (rule) {
+                if (!rule) {
                   _context3.next = 8;
                   break;
                 }
