@@ -165,7 +165,7 @@ var BasePermissionManager = function () {
             switch (_context3.prev = _context3.next) {
               case 0:
                 if (!this.abilities.has(model)) {
-                  _context3.next = 7;
+                  _context3.next = 8;
                   break;
                 }
 
@@ -178,20 +178,25 @@ var BasePermissionManager = function () {
 
                 rule = abilityRules.get(action);
 
+                if (rule) {
+                  _context3.next = 8;
+                  break;
+                }
+
                 if (!isFunction(rule.query)) {
-                  _context3.next = 6;
+                  _context3.next = 7;
                   break;
                 }
 
                 return _context3.abrupt('return', rule.query());
 
-              case 6:
+              case 7:
                 return _context3.abrupt('return', rule.query);
 
-              case 7:
+              case 8:
                 return _context3.abrupt('return', this.restrictLiteral);
 
-              case 8:
+              case 9:
               case 'end':
                 return _context3.stop();
             }
