@@ -61,7 +61,7 @@ class BasePermissionManager {
     }
   }
 
-  async accessible(model, action) {
+  async accessible(model, action, args = []) {
     if (this.abilities.has(model)) {
       const abilityRules = this.abilities.get(model)
 
@@ -73,7 +73,7 @@ class BasePermissionManager {
       
       if (rule) {
         if (isFunction(rule.query)) {
-          return rule.query()
+          return rule.query.call(null, ...args)
         }
   
         return rule.query

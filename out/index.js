@@ -1,5 +1,9 @@
 'use strict';
 
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
 var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -159,7 +163,10 @@ var BasePermissionManager = function () {
     key: 'accessible',
     value: function () {
       var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(model, action) {
-        var abilityRules, rule;
+        var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+        var abilityRules, rule, _rule$query;
+
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
@@ -188,7 +195,7 @@ var BasePermissionManager = function () {
                   break;
                 }
 
-                return _context3.abrupt('return', rule.query());
+                return _context3.abrupt('return', (_rule$query = rule.query).call.apply(_rule$query, [null].concat((0, _toConsumableArray3.default)(args))));
 
               case 7:
                 return _context3.abrupt('return', rule.query);
