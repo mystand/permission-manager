@@ -50,19 +50,19 @@ var BasePermissionManager = function () {
     key: 'can',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(action, target) {
-        var model, abilityRules, rule;
+        var abilityKey, abilityRules, rule;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                model = this.getModel(target);
+                abilityKey = this.getAbilityKey(this.getModel(target));
 
-                if (!this.abilities.has(model)) {
+                if (!this.abilities.has(abilityKey)) {
                   _context.next = 6;
                   break;
                 }
 
-                abilityRules = this.abilities.get(model);
+                abilityRules = this.abilities.get(abilityKey);
                 rule = abilityRules.get(abilityRules.has(action) ? action : 'manage');
 
                 if (!rule) {
@@ -93,43 +93,18 @@ var BasePermissionManager = function () {
     key: 'assert',
     value: function () {
       var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(action, target) {
-        var model, abilityRules, rule, result;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                model = this.getModel(target);
-
-                if (!this.abilities.has(model)) {
-                  _context2.next = 10;
+                if (this.can(action, target)) {
+                  _context2.next = 2;
                   break;
                 }
 
-                abilityRules = this.abilities.get(model);
-                rule = abilityRules.get(abilityRules.has(action) ? action : 'manage');
-
-                if (!rule) {
-                  _context2.next = 10;
-                  break;
-                }
-
-                _context2.next = 7;
-                return rule.checkMethod(target);
-
-              case 7:
-                result = _context2.sent;
-
-                if (!result) {
-                  _context2.next = 10;
-                  break;
-                }
-
-                return _context2.abrupt('return');
-
-              case 10:
                 throw new ForbiddenError();
 
-              case 11:
+              case 2:
               case 'end':
                 return _context2.stop();
             }
@@ -146,17 +121,32 @@ var BasePermissionManager = function () {
   }, {
     key: 'allow',
     value: function allow(model, action, query, checkMethod) {
-      var ability = { query: query, checkMethod: checkMethod };
-      if (!this.abilities.has(model)) {
-        this.abilities.set(model, new _map2.default([[action, ability]]));
-      } else {
-        var abilityRules = this.abilities.get(model);
+      var _this = this;
 
-        if (abilityRules.has(action)) {
-          throw new Error('Action "' + action + '" already defined for ability ' + model.constructor.name + '!');
-        } else {
-          abilityRules.set(action, ability);
-        }
+      var abilityKey = this.getAbilityKey(model);
+      var actions = Array.isArray(action) ? action : [action];
+      var ability = { query: query, checkMethod: checkMethod };
+      if (!this.abilities.has(abilityKey)) {
+        this.abilities.set(abilityKey, new _map2.default());
+      }
+      actions.forEach(function (action) {
+        _this.setAbility(abilityKey, action, ability);
+      });
+    }
+  }, {
+    key: 'getAbilityKey',
+    value: function getAbilityKey(model) {
+      return model.name;
+    }
+  }, {
+    key: 'setAbility',
+    value: function setAbility(abilityKey, action, ability) {
+      var abilityRules = this.abilities.get(abilityKey);
+
+      if (abilityRules.has(action)) {
+        throw new Error('Action "' + action + '" already defined for ability ' + abilityKey + '!');
+      } else {
+        abilityRules.set(action, ability);
       }
     }
   }, {
@@ -165,18 +155,20 @@ var BasePermissionManager = function () {
       var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(model, action) {
         var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
-        var abilityRules, rule, _rule$query;
+        var abilityKey, abilityRules, rule, _rule$query;
 
         return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                if (!this.abilities.has(model)) {
-                  _context3.next = 8;
+                abilityKey = this.getAbilityKey(model);
+
+                if (!this.abilities.has(abilityKey)) {
+                  _context3.next = 9;
                   break;
                 }
 
-                abilityRules = this.abilities.get(model);
+                abilityRules = this.abilities.get(abilityKey);
 
 
                 if (!abilityRules.has(action) && abilityRules.has('manage')) {
@@ -186,24 +178,24 @@ var BasePermissionManager = function () {
                 rule = abilityRules.get(action);
 
                 if (!rule) {
-                  _context3.next = 8;
+                  _context3.next = 9;
                   break;
                 }
 
                 if (!isFunction(rule.query)) {
-                  _context3.next = 7;
+                  _context3.next = 8;
                   break;
                 }
 
                 return _context3.abrupt('return', (_rule$query = rule.query).call.apply(_rule$query, [null].concat((0, _toConsumableArray3.default)(args))));
 
-              case 7:
+              case 8:
                 return _context3.abrupt('return', rule.query);
 
-              case 8:
+              case 9:
                 return _context3.abrupt('return', this.restrictLiteral);
 
-              case 9:
+              case 10:
               case 'end':
                 return _context3.stop();
             }
