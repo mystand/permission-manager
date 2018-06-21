@@ -28,7 +28,7 @@ class BasePermissionManager {
   }
 
   async assert(action, target) {
-    if (!this.can(action, target)) {
+    if (!await this.can(action, target)) {
       throw new ForbiddenError()
     }
   }
@@ -74,7 +74,6 @@ class BasePermissionManager {
         if (isFunction(rule.query)) {
           return rule.query.call(null, ...args)
         }
-  
         return rule.query
       }
     }
