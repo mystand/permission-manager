@@ -45,7 +45,14 @@ var BasePermissionManager = function () {
 
   (0, _createClass3.default)(BasePermissionManager, [{
     key: 'getModel',
-    value: function getModel() {}
+    value: function getModel() {
+      throw new Error('You must implement getModel()');
+    }
+  }, {
+    key: 'getAbilityKey',
+    value: function getAbilityKey(model) {
+      throw new Error('You must implement getAbilityKey()');
+    }
   }, {
     key: 'can',
     value: function () {
@@ -136,11 +143,6 @@ var BasePermissionManager = function () {
       actions.forEach(function (action) {
         _this.setAbility(abilityKey, action, ability);
       });
-    }
-  }, {
-    key: 'getAbilityKey',
-    value: function getAbilityKey(model) {
-      return model.name;
     }
   }, {
     key: 'setAbility',
