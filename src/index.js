@@ -9,7 +9,13 @@ class BasePermissionManager {
   }
 
   // Override in parent class
-  getModel() {}
+  getModel() {
+    throw new Error('You must implement getModel()')
+  }
+
+  getAbilityKey(model) {
+    throw new Error('You must implement getAbilityKey()')
+  }
 
   async can(action, target) {
     const abilityKey = this.getAbilityKey(this.getModel(target))
@@ -43,10 +49,6 @@ class BasePermissionManager {
     actions.forEach((action) => {
       this.setAbility(abilityKey, action, ability)
     })
-  }
-
-  getAbilityKey(model) {
-    return model.name
   }
 
   setAbility(abilityKey, action, ability) {
