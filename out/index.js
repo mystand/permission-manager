@@ -97,14 +97,18 @@ var BasePermissionManager = function () {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (this.can(action, target)) {
-                  _context2.next = 2;
+                _context2.next = 2;
+                return this.can(action, target);
+
+              case 2:
+                if (_context2.sent) {
+                  _context2.next = 4;
                   break;
                 }
 
                 throw new ForbiddenError();
 
-              case 2:
+              case 4:
               case 'end':
                 return _context2.stop();
             }
