@@ -9,13 +9,19 @@ class BasePermissionManager {
   }
 
   // Override in parent class
-  getModel() {}
+  getModel() {
+    throw new Error('You must implement getModel()')
+  }
+
+  getAbilityKey(model) {
+    throw new Error('You must implement getAbilityKey()')
+  }
 
   async can(action, target) {
-    const model = this.getModel(target)
+    const abilityKey = this.getAbilityKey(this.getModel(target))
 
-    if (this.abilities.has(model)) {
-      const abilityRules = this.abilities.get(model)
+    if (this.abilities.has(abilityKey)) {
+      const abilityRules = this.abilities.get(abilityKey)
 
       const rule = abilityRules.get(abilityRules.has(action) ? action : 'manage')
 
@@ -28,42 +34,37 @@ class BasePermissionManager {
   }
 
   async assert(action, target) {
-    const model = this.getModel(target)
-
-    if (this.abilities.has(model)) {
-      const abilityRules = this.abilities.get(model)
-
-      const rule = abilityRules.get(abilityRules.has(action) ? action : 'manage')
-
-      if (rule) {
-        const result = await rule.checkMethod(target)
-        if (result) {
-          return          
-        }
-      }
+    if (!await this.can(action, target)) {
+      throw new ForbiddenError()
     }
-
-    throw new ForbiddenError()
   }
 
   allow(model, action, query, checkMethod) {
+    const abilityKey = this.getAbilityKey(model)
+    const actions = Array.isArray(action) ? action : [action]
     const ability = { query, checkMethod }
-    if (!this.abilities.has(model)) {
-      this.abilities.set(model, new Map([[action, ability]]))
-    } else {
-      const abilityRules = this.abilities.get(model)
+    if (!this.abilities.has(abilityKey)) {
+      this.abilities.set(abilityKey, new Map())
+    }
+    actions.forEach((action) => {
+      this.setAbility(abilityKey, action, ability)
+    })
+  }
 
-      if (abilityRules.has(action)) {
-        throw new Error(`Action "${action}" already defined for ability ${model.constructor.name}!`)
-      } else {
-        abilityRules.set(action, ability)
-      }
+  setAbility(abilityKey, action, ability) {
+    const abilityRules = this.abilities.get(abilityKey)
+
+    if (abilityRules.has(action)) {
+      throw new Error(`Action "${action}" already defined for ability ${abilityKey}!`)
+    } else {
+      abilityRules.set(action, ability)
     }
   }
 
   async accessible(model, action, args = []) {
-    if (this.abilities.has(model)) {
-      const abilityRules = this.abilities.get(model)
+    const abilityKey = this.getAbilityKey(model)
+    if (this.abilities.has(abilityKey)) {
+      const abilityRules = this.abilities.get(abilityKey)
 
       if (!abilityRules.has(action) && abilityRules.has('manage')) {
         action = 'manage'
@@ -75,7 +76,6 @@ class BasePermissionManager {
         if (isFunction(rule.query)) {
           return rule.query.call(null, ...args)
         }
-  
         return rule.query
       }
     }
